@@ -1,0 +1,149 @@
+# Stripped down version of MoltenVK's CI script,
+# only to make tagged releases with our patch.
+
+name: CI
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push or pull request events
+  push:
+  pull_request:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+# See the following, which includes links to supported macOS versions, including supported Xcode versions
+# https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources
+jobs:
+  build:
+    strategy:
+      matrix:
+        xcode: [ "15.0" ]
+        platform: [ "all" ]
+        os: [ "macos-13" ]
+        upload_artifacts: [ true ]
+      fail-fast: false
+
+    name: 'MoltenVK (Xcode ${{ matrix.xcode }} - ${{ matrix.platform }})'
+    
+    runs-on: ${{ matrix.os }}
+    
+    env:
+      XCODE_DEV_PATH: "/Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer"
+
+    defaults:
+      run:
+        working-directory: "MoltenVK"
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+
+      # Python 3.12 removed distutils, which is used by glslang::update_glslang_sources.py called from fetchDependencies
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Select Xcode version
+        run: sudo xcode-select -switch "${XCODE_DEV_PATH}"
+
+      - name: Prep
+        id: prep
+        run: |
+          echo "Get Xcode version info"
+          XCODE_VERSION="$(xcodebuild -version)"
+          echo "${XCODE_VERSION}"
+          XCODE_VERSION="$(echo "${XCODE_VERSION}" | tr '\t\r\n ' '_')"
+          echo "${XCODE_VERSION}"
+          echo "XCODE_VERSION=${XCODE_VERSION}" >> $GITHUB_OUTPUT
+
+      - name: Cache Dependencies
+        id: cache-dependencies
+        if: success() && !(github.event_name == 'push' && contains(github.ref, 'refs/tags/')) # never cache dependencies for pushed tags
+        uses: actions/cache@v3
+        with:
+          path: |
+            External/build
+            !External/build/Intermediates
+          key: ${{ runner.os }}-${{ steps.prep.outputs.XCODE_VERSION }}-${{ matrix.platform }}-${{ hashFiles('fetchDependencies','ExternalRevisions/**','ExternalDependencies.xcodeproj/**','Scripts/**') }}
+
+      - name: Disable ObjC MsgSend selector stubs for osxcross compatibility
+        run: |
+          patch -p1 < ../patches/moltenvk-osxcross-compat.patch
+
+      - name: Fetch Dependencies (Use Built Cache)
+        if: steps.cache-dependencies.outputs.cache-hit == 'true'
+        run: |
+          ./fetchDependencies -v --none
+
+      - name: Fetch Dependencies
+        run: |
+          ./fetchDependencies -v --${{ matrix.platform }}
+
+      - name: Output Dependency Build Logs on Failure
+        if: failure()
+        run: cat "dependenciesbuild.log"
+
+      - name: Build MoltenVK
+        run: |
+          make ${{ matrix.platform }}
+
+      - name: Output MoltenVK Build Logs on Failure
+        if: failure()
+        run: |
+          if [ -f "xcodebuild.log" ]; then
+            cat "xcodebuild.log"
+          fi
+
+      - name: Tar Artifacts
+        if: success() && matrix.upload_artifacts == true
+        # See: https://github.com/actions/upload-artifact#maintaining-file-permissions-and-case-sensitive-files
+        # To reduce artifact size, don't include any stand-alone shader converter binaries.
+        run: |
+          rm -rf Package/Release/MoltenVKShaderConverter
+          tar -C Package -s/Release/MoltenVK/ -cvf "MoltenVK-${{ matrix.platform }}.tar" Release/
+
+      - name: Upload Artifacts
+        if: success() && matrix.upload_artifacts == true
+        uses: actions/upload-artifact@v4
+        with:
+          name: "MoltenVK-${{ matrix.platform }}"
+          path: "MoltenVK/MoltenVK-${{ matrix.platform }}.tar"
+
+  release:
+    name: 'Release'
+
+    needs: [build]
+
+    runs-on: ubuntu-latest
+
+    if: ${{ startsWith(github.ref, 'refs/tags/') }}
+
+    permissions:
+      contents: write
+
+    defaults:
+      run:
+        working-directory: "MoltenVK"
+
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          # Allow updating existing releases if the workflow is triggered by release creation or re-run.
+          allowUpdates: true
+          # When the release is updated, delete the existing artifacts for replacement.
+          removeArtifacts: true
+          # If a release is being replaced, omit updating the name and body.
+          # Allows for creating a release and filling these in before the workflow runs.
+          # Then, the workflow will populate the release with the artifacts.
+          omitNameDuringUpdate: true
+          omitBodyDuringUpdate: true
+          # Upload all MoltenVK CI artifacts as release assets.
+          artifacts: "MoltenVK*/*"
+          artifactErrorsFailBuild: true

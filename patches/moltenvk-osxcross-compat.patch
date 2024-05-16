@@ -1,0 +1,113 @@
+diff --git a/Makefile b/Makefile
+index 5fe34950..e29d7f6b 100644
+--- a/Makefile
++++ b/Makefile
+@@ -4,6 +4,7 @@ XC_SCHEME := MoltenVK Package
+ XCODEBUILD := set -o pipefail && $(shell command -v xcodebuild)
+ # Used to determine if xcpretty is available
+ XCPRETTY_PATH := $(shell command -v xcpretty 2> /dev/null)
++OTHER_CFLAGS := "-fno-objc-msgsend-selector-stubs -Wno-unused-command-line-argument"
+ 
+ OUTPUT_FMT_CMD =
+ ifdef XCPRETTY_PATH
+@@ -47,71 +48,71 @@ all-debug:
+ 
+ .PHONY: macos
+ macos:
+-	$(XCODEBUILD) build -project "$(XC_PROJ)" -scheme "$(XC_SCHEME) (macOS only)" -destination "generic/platform=macOS" GCC_PREPROCESSOR_DEFINITIONS='$${inherited} $(MAKEARGS)' $(OUTPUT_FMT_CMD)
++	$(XCODEBUILD) build -project "$(XC_PROJ)" -scheme "$(XC_SCHEME) (macOS only)" -destination "generic/platform=macOS" GCC_PREPROCESSOR_DEFINITIONS='$${inherited} $(MAKEARGS)' OTHER_CFLAGS=$(OTHER_CFLAGS) $(OUTPUT_FMT_CMD)
+ 
+ .PHONY: macos-debug
+ macos-debug:
+-	$(XCODEBUILD) build -project "$(XC_PROJ)" -scheme "$(XC_SCHEME) (macOS only)" -destination "generic/platform=macOS" -configuration "Debug" GCC_PREPROCESSOR_DEFINITIONS='$${inherited} $(MAKEARGS)' $(OUTPUT_FMT_CMD)
++	$(XCODEBUILD) build -project "$(XC_PROJ)" -scheme "$(XC_SCHEME) (macOS only)" -destination "generic/platform=macOS" -configuration "Debug" GCC_PREPROCESSOR_DEFINITIONS='$${inherited} $(MAKEARGS)' OTHER_CFLAGS=$(OTHER_CFLAGS) $(OUTPUT_FMT_CMD)
+ 
+ .PHONY: ios
+ ios:
+-	$(XCODEBUILD) build -project "$(XC_PROJ)" -scheme "$(XC_SCHEME) (iOS only)" -destination "generic/platform=iOS" GCC_PREPROCESSOR_DEFINITIONS='$${inherited} $(MAKEARGS)' $(OUTPUT_FMT_CMD)
++	$(XCODEBUILD) build -project "$(XC_PROJ)" -scheme "$(XC_SCHEME) (iOS only)" -destination "generic/platform=iOS" GCC_PREPROCESSOR_DEFINITIONS='$${inherited} $(MAKEARGS)' OTHER_CFLAGS=$(OTHER_CFLAGS) $(OUTPUT_FMT_CMD)
+ 
+ .PHONY: ios-debug
+ ios-debug:
+-	$(XCODEBUILD) build -project "$(XC_PROJ)" -scheme "$(XC_SCHEME) (iOS only)" -destination "generic/platform=iOS" -configuration "Debug" GCC_PREPROCESSOR_DEFINITIONS='$${inherited} $(MAKEARGS)' $(OUTPUT_FMT_CMD)
++	$(XCODEBUILD) build -project "$(XC_PROJ)" -scheme "$(XC_SCHEME) (iOS only)" -destination "generic/platform=iOS" -configuration "Debug" GCC_PREPROCESSOR_DEFINITIONS='$${inherited} $(MAKEARGS)' OTHER_CFLAGS=$(OTHER_CFLAGS) $(OUTPUT_FMT_CMD)
+ 
+ .PHONY: iossim
+ iossim:
+-	$(XCODEBUILD) build -project "$(XC_PROJ)" -scheme "$(XC_SCHEME) (iOS only)" -destination "generic/platform=iOS Simulator" GCC_PREPROCESSOR_DEFINITIONS='$${inherited} $(MAKEARGS)' $(OUTPUT_FMT_CMD)
++	$(XCODEBUILD) build -project "$(XC_PROJ)" -scheme "$(XC_SCHEME) (iOS only)" -destination "generic/platform=iOS Simulator" GCC_PREPROCESSOR_DEFINITIONS='$${inherited} $(MAKEARGS)' OTHER_CFLAGS=$(OTHER_CFLAGS) $(OUTPUT_FMT_CMD)
+ 
+ .PHONY: iossim-debug
+ iossim-debug:
+-	$(XCODEBUILD) build -project "$(XC_PROJ)" -scheme "$(XC_SCHEME) (iOS only)" -destination "generic/platform=iOS Simulator" -configuration "Debug" GCC_PREPROCESSOR_DEFINITIONS='$${inherited} $(MAKEARGS)' $(OUTPUT_FMT_CMD)
++	$(XCODEBUILD) build -project "$(XC_PROJ)" -scheme "$(XC_SCHEME) (iOS only)" -destination "generic/platform=iOS Simulator" -configuration "Debug" GCC_PREPROCESSOR_DEFINITIONS='$${inherited} $(MAKEARGS)' OTHER_CFLAGS=$(OTHER_CFLAGS) $(OUTPUT_FMT_CMD)
+ 
+ .PHONY: maccat
+ maccat:
+-	$(XCODEBUILD) build -project "$(XC_PROJ)" -scheme "$(XC_SCHEME) (MacCat only)" -destination "generic/platform=macOS,variant=Mac Catalyst" GCC_PREPROCESSOR_DEFINITIONS='$${inherited} $(MAKEARGS)' $(OUTPUT_FMT_CMD)
++	$(XCODEBUILD) build -project "$(XC_PROJ)" -scheme "$(XC_SCHEME) (MacCat only)" -destination "generic/platform=macOS,variant=Mac Catalyst" GCC_PREPROCESSOR_DEFINITIONS='$${inherited} $(MAKEARGS)' OTHER_CFLAGS=$(OTHER_CFLAGS) $(OUTPUT_FMT_CMD)
+ 
+ .PHONY: maccat-debug
+ maccat-debug:
+-	$(XCODEBUILD) build -project "$(XC_PROJ)" -scheme "$(XC_SCHEME) (MacCat only)" -destination "generic/platform=macOS,variant=Mac Catalyst" -configuration "Debug" GCC_PREPROCESSOR_DEFINITIONS='$${inherited} $(MAKEARGS)' $(OUTPUT_FMT_CMD)
++	$(XCODEBUILD) build -project "$(XC_PROJ)" -scheme "$(XC_SCHEME) (MacCat only)" -destination "generic/platform=macOS,variant=Mac Catalyst" -configuration "Debug" GCC_PREPROCESSOR_DEFINITIONS='$${inherited} $(MAKEARGS)' OTHER_CFLAGS=$(OTHER_CFLAGS) $(OUTPUT_FMT_CMD)
+ 
+ .PHONY: tvos
+ tvos:
+-	$(XCODEBUILD) build -project "$(XC_PROJ)" -scheme "$(XC_SCHEME) (tvOS only)" -destination "generic/platform=tvOS" GCC_PREPROCESSOR_DEFINITIONS='$${inherited} $(MAKEARGS)' $(OUTPUT_FMT_CMD)
++	$(XCODEBUILD) build -project "$(XC_PROJ)" -scheme "$(XC_SCHEME) (tvOS only)" -destination "generic/platform=tvOS" GCC_PREPROCESSOR_DEFINITIONS='$${inherited} $(MAKEARGS)' OTHER_CFLAGS=$(OTHER_CFLAGS) $(OUTPUT_FMT_CMD)
+ 
+ .PHONY: tvos-debug
+ tvos-debug:
+-	$(XCODEBUILD) build -project "$(XC_PROJ)" -scheme "$(XC_SCHEME) (tvOS only)" -destination "generic/platform=tvOS" -configuration "Debug" GCC_PREPROCESSOR_DEFINITIONS='$${inherited} $(MAKEARGS)' $(OUTPUT_FMT_CMD)
++	$(XCODEBUILD) build -project "$(XC_PROJ)" -scheme "$(XC_SCHEME) (tvOS only)" -destination "generic/platform=tvOS" -configuration "Debug" GCC_PREPROCESSOR_DEFINITIONS='$${inherited} $(MAKEARGS)' OTHER_CFLAGS=$(OTHER_CFLAGS) $(OUTPUT_FMT_CMD)
+ 
+ .PHONY: tvossim
+ tvossim:
+-	$(XCODEBUILD) build -project "$(XC_PROJ)" -scheme "$(XC_SCHEME) (tvOS only)" -destination "generic/platform=tvOS Simulator" GCC_PREPROCESSOR_DEFINITIONS='$${inherited} $(MAKEARGS)' $(OUTPUT_FMT_CMD)
++	$(XCODEBUILD) build -project "$(XC_PROJ)" -scheme "$(XC_SCHEME) (tvOS only)" -destination "generic/platform=tvOS Simulator" GCC_PREPROCESSOR_DEFINITIONS='$${inherited} $(MAKEARGS)' OTHER_CFLAGS=$(OTHER_CFLAGS) $(OUTPUT_FMT_CMD)
+ 
+ .PHONY: tvossim-debug
+ tvossim-debug:
+-	$(XCODEBUILD) build -project "$(XC_PROJ)" -scheme "$(XC_SCHEME) (tvOS only)" -destination "generic/platform=tvOS Simulator" -configuration "Debug" GCC_PREPROCESSOR_DEFINITIONS='$${inherited} $(MAKEARGS)' $(OUTPUT_FMT_CMD)
++	$(XCODEBUILD) build -project "$(XC_PROJ)" -scheme "$(XC_SCHEME) (tvOS only)" -destination "generic/platform=tvOS Simulator" -configuration "Debug" GCC_PREPROCESSOR_DEFINITIONS='$${inherited} $(MAKEARGS)' OTHER_CFLAGS=$(OTHER_CFLAGS) $(OUTPUT_FMT_CMD)
+ 
+ .PHONY: visionos
+ visionos:
+-	$(XCODEBUILD) build -project "$(XC_PROJ)" -scheme "$(XC_SCHEME) (visionOS only)" -destination "generic/platform=xrOS" GCC_PREPROCESSOR_DEFINITIONS='$${inherited} $(MAKEARGS)' $(OUTPUT_FMT_CMD)
++	$(XCODEBUILD) build -project "$(XC_PROJ)" -scheme "$(XC_SCHEME) (visionOS only)" -destination "generic/platform=xrOS" GCC_PREPROCESSOR_DEFINITIONS='$${inherited} $(MAKEARGS)' OTHER_CFLAGS=$(OTHER_CFLAGS) $(OUTPUT_FMT_CMD)
+ 
+ .PHONY: visionos-debug
+ visionos-debug:
+-	$(XCODEBUILD) build -project "$(XC_PROJ)" -scheme "$(XC_SCHEME) (visionOS only)" -destination "generic/platform=xrOS" -configuration "Debug" GCC_PREPROCESSOR_DEFINITIONS='$${inherited} $(MAKEARGS)' $(OUTPUT_FMT_CMD)
++	$(XCODEBUILD) build -project "$(XC_PROJ)" -scheme "$(XC_SCHEME) (visionOS only)" -destination "generic/platform=xrOS" -configuration "Debug" GCC_PREPROCESSOR_DEFINITIONS='$${inherited} $(MAKEARGS)' OTHER_CFLAGS=$(OTHER_CFLAGS) $(OUTPUT_FMT_CMD)
+ 
+ .PHONY: visionossim
+ visionossim:
+-	$(XCODEBUILD) build -project "$(XC_PROJ)" -scheme "$(XC_SCHEME) (visionOS only)" -destination "generic/platform=xrOS Simulator" GCC_PREPROCESSOR_DEFINITIONS='$${inherited} $(MAKEARGS)' $(OUTPUT_FMT_CMD)
++	$(XCODEBUILD) build -project "$(XC_PROJ)" -scheme "$(XC_SCHEME) (visionOS only)" -destination "generic/platform=xrOS Simulator" GCC_PREPROCESSOR_DEFINITIONS='$${inherited} $(MAKEARGS)' OTHER_CFLAGS=$(OTHER_CFLAGS) $(OUTPUT_FMT_CMD)
+ 
+ .PHONY: visionossim-debug
+ visionossim-debug:
+-	$(XCODEBUILD) build -project "$(XC_PROJ)" -scheme "$(XC_SCHEME) (visionOS only)" -destination "generic/platform=xrOS Simulator" -configuration "Debug" GCC_PREPROCESSOR_DEFINITIONS='$${inherited} $(MAKEARGS)' $(OUTPUT_FMT_CMD)
++	$(XCODEBUILD) build -project "$(XC_PROJ)" -scheme "$(XC_SCHEME) (visionOS only)" -destination "generic/platform=xrOS Simulator" -configuration "Debug" GCC_PREPROCESSOR_DEFINITIONS='$${inherited} $(MAKEARGS)' OTHER_CFLAGS=$(OTHER_CFLAGS) $(OUTPUT_FMT_CMD)
+ 
+ .PHONY: clean
+ clean:
+-	$(XCODEBUILD) clean -project "$(XC_PROJ)" -scheme "$(XC_SCHEME) (macOS only)" -destination "generic/platform=macOS" $(OUTPUT_FMT_CMD)
++	$(XCODEBUILD) clean -project "$(XC_PROJ)" -scheme "$(XC_SCHEME) (macOS only)" -destination "generic/platform=macOS" OTHER_CFLAGS=$(OTHER_CFLAGS) $(OUTPUT_FMT_CMD)
+ 	rm -rf Package
+ 
+ # Usually requires 'sudo make install'
+diff --git a/fetchDependencies b/fetchDependencies
+index a870c300..117329d5 100755
+--- a/fetchDependencies
++++ b/fetchDependencies
+@@ -454,6 +454,7 @@ function build_impl() {
+ 		-enableThreadSanitizer "${XC_USE_TSAN}"					\
+ 		-enableUndefinedBehaviorSanitizer "${XC_USE_UBSAN}"		\
+ 		-derivedDataPath "${XC_LCL_DD_PATH}"					\
++		OTHER_CFLAGS="-fno-objc-msgsend-selector-stubs -Wno-unused-command-line-argument"	\
+ 		${XC_BUILD_VERBOSITY}									\
+ 		build
+ 
