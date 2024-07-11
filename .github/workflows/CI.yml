@@ -73,6 +73,10 @@ jobs:
         run: |
           patch -p1 < ../patches/moltenvk-osxcross-compat.patch
 
+      - name: Change macOS build target to 10.13
+        run: |
+          patch -p1 < ../patches/moltenvk-1013-compat.patch
+
       - name: Fetch Dependencies (Use Built Cache)
         if: steps.cache-dependencies.outputs.cache-hit == 'true'
         run: |
