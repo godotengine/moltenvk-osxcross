@@ -1,8 +1,8 @@
 diff --git a/ExternalDependencies.xcodeproj/project.pbxproj b/ExternalDependencies.xcodeproj/project.pbxproj
-index 27442c7b..be4c18d5 100644
+index e7e226c9..5288d60f 100644
 --- a/ExternalDependencies.xcodeproj/project.pbxproj
 +++ b/ExternalDependencies.xcodeproj/project.pbxproj
-@@ -7176,7 +7176,7 @@
+@@ -4586,7 +4586,7 @@
  				GCC_WARN_UNUSED_VARIABLE = NO;
  				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
  				MACH_O_TYPE = staticlib;
@@ -11,7 +11,7 @@ index 27442c7b..be4c18d5 100644
  				SKIP_INSTALL = YES;
  				TVOS_DEPLOYMENT_TARGET = 13.0;
  			};
-@@ -7226,7 +7226,7 @@
+@@ -4636,7 +4636,7 @@
  				GCC_WARN_UNUSED_VARIABLE = NO;
  				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
  				MACH_O_TYPE = staticlib;
@@ -21,10 +21,10 @@ index 27442c7b..be4c18d5 100644
  				TVOS_DEPLOYMENT_TARGET = 13.0;
  				VALIDATE_PRODUCT = YES;
 diff --git a/MoltenVK/MoltenVK.xcodeproj/project.pbxproj b/MoltenVK/MoltenVK.xcodeproj/project.pbxproj
-index 7a029774..bd6ff644 100644
+index 093da584..08351433 100644
 --- a/MoltenVK/MoltenVK.xcodeproj/project.pbxproj
 +++ b/MoltenVK/MoltenVK.xcodeproj/project.pbxproj
-@@ -2692,7 +2692,7 @@
+@@ -2694,7 +2694,7 @@
  					"\"${BUILT_PRODUCTS_DIR}\"",
  				);
  				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
@@ -33,7 +33,7 @@ index 7a029774..bd6ff644 100644
  				MARKETING_VERSION = "${CURRENT_PROJECT_VERSION}";
  				MTL_ENABLE_DEBUG_INFO = YES;
  				PRELINK_LIBS = "${CONFIGURATION_BUILD_DIR}/libMoltenVKShaderConverter.a";
-@@ -2765,7 +2765,7 @@
+@@ -2771,7 +2771,7 @@
  					"\"${BUILT_PRODUCTS_DIR}\"",
  				);
  				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
@@ -42,15 +42,3 @@ index 7a029774..bd6ff644 100644
  				MARKETING_VERSION = "${CURRENT_PROJECT_VERSION}";
  				MTL_ENABLE_DEBUG_INFO = NO;
  				PRELINK_LIBS = "${CONFIGURATION_BUILD_DIR}/libMoltenVKShaderConverter.a";
-diff --git a/fetchDependencies b/fetchDependencies
-index a870c300..2a349868 100755
---- a/fetchDependencies
-+++ b/fetchDependencies
-@@ -369,6 +369,7 @@ else
- 	./build_info.py .        \
- 		-i build_info.h.tmpl  \
- 		-o build/include/glslang/build_info.h
-+	patch -p1 < ../../../patches/disable-absolute-paths-for-apple-compat.patch
- 	cd -  > /dev/null
- fi
- 
